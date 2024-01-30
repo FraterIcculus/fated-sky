@@ -8,56 +8,57 @@ import { PLANET_DIGNITIES, findTimeForLocation, moonInfo } from "./bodies";
 import { percentify } from "./common";
 import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "./decans";
-import { program } from 'commander';
+import { program } from "commander";
 
 program
-    .option('-l, --locations <file>', 'A path to a locations JSON')
-    .option('-n, --name <name>', 'The location key name to use')
-    .option('-g, --geo <long,lat>', 'Geographic location: long,lat')
-    .option('-e, --ephe <filepath>', 'The path to the Swiss Ephemeris data files')
-    .parse(process.argv);
+  .option("-l, --locations <file>", "A path to a locations JSON")
+  .option("-n, --name <name>", "The location key name to use")
+  .option("-g, --geo <long,lat>", "Geographic location: long,lat")
+  .option("-e, --ephe <filepath>", "The path to the Swiss Ephemeris data files")
+  .parse(process.argv);
 
 const options = program.opts();
 
-let position:[number,number];
+let position: [number, number];
 
 if (options.geo) {
-  position = (options.geo as string).split(',').map(s => parseFloat(s.trim())) as [number, number];
+  position = (options.geo as string)
+    .split(",")
+    .map((s) => parseFloat(s.trim())) as [number, number];
 } else if (options.locations && options.name) {
   const positions: Record<string, [number, number, number]> = JSON.parse(
-    // This expects a file to contain records like:
-    // { "some-name": [-86.157328, 39.779955, 750], ...}
     readFileSync(options.locations, { encoding: "utf8", flag: "r" })
-  );  
+  );
   position = positions[options.name].slice(0, -1) as [number, number];
 } else {
-  console.error('Error: you must provide either --geo, or --locations & --name.');
+  console.error(
+    "Error: you must provide either --geo, or --locations & --name."
+  );
   process.exit(1);
 }
 
 if (options.ephe) {
   sweph.set_ephe_path(options.ephe);
 } else {
-  console.error('Error: You must provide a path to Swiss Ephemeris data files.');
+  console.error(
+    "Error: You must provide a path to Swiss Ephemeris data files."
+  );
   process.exit(1);
 }
 
-const moon = getBodiesHousePositions(
-  DateTime.now(),
-  position,
-  ["moon"]
-);
-const mansion = getMansionFromPosition(moon.moon.position);
+// the current house Moon.
+const chMoon = getBodiesHousePositions(DateTime.now(), position, ["moon"]);
+const mansion = getMansionFromPosition(chMoon.moon.position);
 const moonPhase = moonInfo(DateTime.now());
 
 // console.dir(moon);
 // console.dir(moonPhase);
 // console.dir(mansion);
 
-const currentMoonPosition = moon.moon.position.raw;
+const currentMoonPosition = chMoon.moon.position.raw;
 const houseStart = Math.trunc(currentMoonPosition / 30) * 30;
 
-const locDt = findTimeForLocation(
+const moonInNextHouseDT = findTimeForLocation(
   "moon",
   DateTime.now(),
   DateTime.now().plus({ days: 60 }),
@@ -66,14 +67,11 @@ const locDt = findTimeForLocation(
 );
 //console.dir(locDt);
 
-const moon2 = getBodiesHousePositions(
-  locDt as DateTime,
-  position,
-  ["moon"]
-);
+// the moon, when it's in the next house.
+const nhMoon = getBodiesHousePositions(moonInNextHouseDT as DateTime, position, ["moon"]);
 // console.dir(moon2);
 
-const moonPhase2 = moonInfo(locDt as DateTime);
+const moonPhase2 = moonInfo(moonInNextHouseDT as DateTime);
 
 const dignity = PLANET_DIGNITIES.moon;
 
@@ -109,33 +107,33 @@ function getSignElement(house: number) {
 
 let decanRuler =
   DECAN_RULER_LOOKUP[
-    `${moon.moon.house.abbreviation.toLowerCase()}${moon.moon.decan}`
+    `${chMoon.moon.house.abbreviation.toLowerCase()}${chMoon.moon.decan}`
   ];
 
-if (decanRuler === 'Moon') {
-  decanRuler = `${ansis.whiteBright(decanRuler)}`
+if (decanRuler === "Moon") {
+  decanRuler = `${ansis.whiteBright(decanRuler)}`;
 }
 
 const line1 = `${moonPhase.phaseEmoji} @ ${ansis.whiteBright(
   percentify(moonPhase.lumination).toString()
 )}% ${ansis.blackBright("lum")} ${
   moonPhase.waxing ? ansis.blueBright("↑") : ansis.blue("↓")
-} in decan ${moon.moon.decan} of ${moon.moon.house.glyph}[${getDignityCode(
-  moon.moon.house.number
-)}] ${getSignElement(moon.moon.house.number)}`;
+} in decan ${chMoon.moon.decan} of ${chMoon.moon.house.glyph}[${getDignityCode(
+  chMoon.moon.house.number
+)}] ${getSignElement(chMoon.moon.house.number)}`;
 const line4 = `        ${ansis.blackBright(".")}${ansis.white(
   "o"
-)}${ansis.whiteBright("(")} ${moon.moon.house.name} ${
-  moon.moon.decan
+)}${ansis.whiteBright("(")} ${chMoon.moon.house.name} ${
+  chMoon.moon.decan
 } ruled by ${decanRuler} ${ansis.whiteBright(")")}${ansis.white(
   "o"
 )}${ansis.blackBright(".")}`;
 const line2 = `${moonPhase.phaseEmoji} in Mansion ${mansion.mansion}: ${mansion.name} : ${mansion.meaning}`;
 const line3 = `${moonPhase2.phaseEmoji} → ${
-  moon2.moon.house.glyph
-}[${getDignityCode(moon2.moon.house.number)}]  ${getSignElement(
-  moon2.moon.house.number
-)} @ ${locDt}`;
+  nhMoon.moon.house.glyph
+}[${getDignityCode(nhMoon.moon.house.number)}]  ${getSignElement(
+  nhMoon.moon.house.number
+)} @ ${moonInNextHouseDT}`;
 
 console.log(line2);
 console.log(line1);

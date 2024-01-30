@@ -231,9 +231,9 @@ export function findTimeForLocation(
     (bkwDegreesToTarget <= tolerance && bLon >= targetDegrees) ||
     cycle >= maxCycles
   ) {
-    console.log(
-      `(cyc: ${cycle})Target location ${bLon}, target ${targetDegrees} on date ${start}`
-    );
+    // console.log(
+    //   `(cyc: ${cycle})Target location ${bLon}, target ${targetDegrees} on date ${start}`
+    // );
     return start;
   }
 

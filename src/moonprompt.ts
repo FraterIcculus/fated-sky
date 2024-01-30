@@ -68,7 +68,11 @@ const moonInNextHouseDT = findTimeForLocation(
 //console.dir(locDt);
 
 // the moon, when it's in the next house.
-const nhMoon = getBodiesHousePositions(moonInNextHouseDT as DateTime, position, ["moon"]);
+const nhMoon = getBodiesHousePositions(
+  moonInNextHouseDT as DateTime,
+  position,
+  ["moon"]
+);
 // console.dir(moon2);
 
 const moonPhase2 = moonInfo(moonInNextHouseDT as DateTime);
@@ -114,21 +118,35 @@ if (decanRuler === "Moon") {
   decanRuler = `${ansis.whiteBright(decanRuler)}`;
 }
 
-const line1 = `${moonPhase.phaseEmoji} @ ${ansis.whiteBright(
-  percentify(moonPhase.lumination).toString()
-)}% ${ansis.blackBright("lum")} ${
-  moonPhase.waxing ? ansis.blueBright("↑") : ansis.blue("↓")
-} in decan ${chMoon.moon.decan} of ${chMoon.moon.house.glyph}[${getDignityCode(
-  chMoon.moon.house.number
-)}] ${getSignElement(chMoon.moon.house.number)}`;
-const line4 = `        ${ansis.blackBright(".")}${ansis.white(
-  "o"
-)}${ansis.whiteBright("(")} ${chMoon.moon.house.name} ${
-  chMoon.moon.decan
-} ruled by ${decanRuler} ${ansis.whiteBright(")")}${ansis.white(
-  "o"
-)}${ansis.blackBright(".")}`;
+const line1 =
+  "" +
+  moonPhase.phaseEmoji +
+  " @ " +
+  ansis.whiteBright(percentify(moonPhase.lumination).toString()) +
+  "% " +
+  ansis.blackBright("lum ") +
+  (moonPhase.waxing ? ansis.blueBright("↑") : ansis.blue("↓")) +
+  " in decan " +
+  chMoon.moon.decan +
+  " of " +
+  chMoon.moon.house.glyph +
+  "[" +
+  getDignityCode(chMoon.moon.house.number) +
+  "]" +
+  getSignElement(chMoon.moon.house.number);
+
+const line4 =
+  ansis.blackBright(".") +
+  ansis.white("o") +
+  ansis.whiteBright("(") +
+  `${chMoon.moon.house.name} ${chMoon.moon.decan}` +
+  ` ruled by ${decanRuler}` +
+  ansis.whiteBright(")") +
+  ansis.white("o") +
+  ansis.blackBright(".");
+
 const line2 = `${moonPhase.phaseEmoji} in Mansion ${mansion.mansion}: ${mansion.name} : ${mansion.meaning}`;
+
 const line3 = `${moonPhase2.phaseEmoji} → ${
   nhMoon.moon.house.glyph
 }[${getDignityCode(nhMoon.moon.house.number)}]  ${getSignElement(
@@ -137,5 +155,5 @@ const line3 = `${moonPhase2.phaseEmoji} → ${
 
 console.log(line2);
 console.log(line1);
-console.log(line4);
+console.log('       '+line4);
 console.log(line3);

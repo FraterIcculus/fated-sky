@@ -1,8 +1,8 @@
 {
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/moonprompt.ts",
-    "dev": "nodemon --exec ts-node src/moonprompt.ts"
+    "moonprompt:start": "ts-node src/moonprompt.ts",
+    "moonprompt:dev": "nodemon -e json,ts --exec 'ts-node src/moonprompt.ts -g '-74.006,40.7128' -e ./ephe'"
   },
   "devDependencies": {
     "@types/luxon": "^3.4.2",

@@ -24,7 +24,11 @@ function precmd() {
 }
 ```
 
-Build the `JS` via `npm run build`.
+Build the `JS` via `npm run build`. It also needs to be set executable via:
+
+```sh
+chmod +x dist/moonprompt.js
+```
 
 #### Running Examples
 

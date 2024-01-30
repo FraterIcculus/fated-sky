@@ -10,13 +10,11 @@ import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "./decans";
 import { program } from 'commander';
 
-
-sweph.set_ephe_path("./ephe");
-
 program
     .option('-l, --locations <file>', 'A path to a locations JSON')
     .option('-n, --name <name>', 'The location key name to use')
     .option('-g, --geo <long,lat>', 'Geographic location: long,lat')
+    .option('-e, --ephe <filepath>', 'The path to the Swiss Ephemeris data files')
     .parse(process.argv);
 
 const options = program.opts();
@@ -34,6 +32,13 @@ if (options.geo) {
   position = positions[options.name].slice(0, -1) as [number, number];
 } else {
   console.error('Error: you must provide either --geo, or --locations & --name.');
+  process.exit(1);
+}
+
+if (options.ephe) {
+  sweph.set_ephe_path(options.ephe);
+} else {
+  console.error('Error: You must provide a path to Swiss Ephemeris data files.');
   process.exit(1);
 }
 

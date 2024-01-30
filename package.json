@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon --exec ts-node src/moonprompt.ts"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20.11.8",
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "ansis": "^2.0.3",
+    "commander": "^11.1.0",
+    "luxon": "^3.4.4",
+    "sweph": "^2.10.3-3"
+  }
+}

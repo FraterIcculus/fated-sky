@@ -7,6 +7,25 @@ import {
   STANDARD_FLAGS,
 } from "./common";
 
+export const BODY_GLYPHS: { [key: string]: string } = {
+  sun: "☉",
+  moon: "☾",
+  mercury: "☿",
+  venus: "♀",
+  earth: "♁",
+  mars: "♂",
+  jupiter: "♃",
+  saturn: "♄",
+  uranus: "♅",
+  neptune: "♆",
+  pluto: "♇",
+  chiron: "⚷",
+  asc: "⇧",
+  mc: "⇪" // Alternatively, MC (Midheaven) is often represented as "MC"
+};
+
+
+
 export type Body =
   | "asc"
   | "mc"
@@ -21,6 +40,8 @@ export type Body =
   | "neptune"
   | "pluto"
   | "chiron";
+
+export const TRADITIONAL_7 = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"]
 
 export type PlanetDignities = {
   rulership: number[];

@@ -4,11 +4,18 @@ import { ZODIAC_INFO, getBodiesHousePositions } from "./houses";
 import { DateTime } from "luxon";
 import { readFileSync } from "fs";
 import { getMansionFromPosition } from "./mansions";
-import { PLANET_DIGNITIES, findTimeForLocation, moonInfo } from "./bodies";
+import {
+  BODY_GLYPHS,
+  PLANET_DIGNITIES,
+  TRADITIONAL_7,
+  findTimeForLocation,
+  moonInfo,
+} from "./bodies";
 import { percentify } from "./common";
 import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "./decans";
 import { program } from "commander";
+import { ASPECT_GLYPHS, COLORED_ASPECT_GLYPHS, aspectsForBodies, multiBodyAspectSearch } from "./aspects";
 
 program
   .option("-l, --locations <file>", "A path to a locations JSON")
@@ -47,7 +54,7 @@ if (options.ephe) {
 }
 
 // the current house Moon.
-const chMoon = getBodiesHousePositions(DateTime.now(), position, ["moon"]);
+const chMoon = getBodiesHousePositions(DateTime.now(), position, TRADITIONAL_7);
 const mansion = getMansionFromPosition(chMoon.moon.position);
 const moonPhase = moonInfo(DateTime.now());
 
@@ -155,5 +162,14 @@ const line3 = `${moonPhase2.phaseEmoji} → ${
 
 console.log(line2);
 console.log(line1);
-console.log('       '+line4);
+console.log("       " + line4);
 console.log(line3);
+
+console.log('   Aspects: ' +
+Object.entries(aspectsForBodies(chMoon).moon)
+  .filter(([_, value]) => value?.aspect !== undefined)
+  .reduce((acc, cur) => {
+    return acc + `${BODY_GLYPHS['moon']} ${COLORED_ASPECT_GLYPHS[cur[1].aspect]} ${BODY_GLYPHS[cur[0]]}   `;
+  }, ""));
+
+// filter((asp) => asp?.aspect !== undefined));

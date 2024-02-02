@@ -61,10 +61,13 @@ if (options.ephe) {
   process.exit(1);
 }
 
+const runTime = DateTime.now();
+const currentSystemTimezone = runTime.toLocal().zoneName;
+
 // the current house Moon.
-const chMoon = getBodiesHousePositions(DateTime.now(), position, TRADITIONAL_7);
+const chMoon = getBodiesHousePositions(runTime, position, TRADITIONAL_7);
 const mansion = getMansionFromPosition(chMoon.moon.position);
-const moonPhase = moonInfo(DateTime.now());
+const moonPhase = moonInfo(runTime);
 
 // console.dir(moon);
 // console.dir(moonPhase);
@@ -75,8 +78,8 @@ const houseStart = Math.trunc(currentMoonPosition / 30) * 30;
 
 const moonInNextHouseDT = findTimeForLocation(
   "moon",
-  DateTime.now(),
-  DateTime.now().plus({ days: 60 }),
+  runTime,
+  runTime.plus({ days: 60 }),
   houseStart + 30,
   false
 );
@@ -198,8 +201,6 @@ function findMoonHours(phd: any) {
 }
 
 function moonHoursString(mdata: any) {
-  const currentSystemTimezone = DateTime.local().zoneName;
-
   mdata.dayMoons.reduce((acc: string, cur: any) => {
     acc +
       "\n     Day Hour of the Moon" +
@@ -244,10 +245,13 @@ function moonHoursString(mdata: any) {
   return mhs;
 }
 
-const date = DateTime.local().startOf("day");
+const date = runTime.toLocal().startOf("day");
 const rt = riseTimeSun(date, [...position, 0]);
 const st = setTimeSun(date, [...position, 0]);
 const rtn = riseTimeSun(date.plus({ days: 1 }), [...position, 0]);
 let phd = daylightPlanetyHourDivision(rt, st, rtn);
 // console.log(findMoonHours(phd));
 console.log(moonHoursString(findMoonHours(phd)));
+console.log(
+  "     Current Time: " + runTime.setZone(currentSystemTimezone).toFormat("HH:mm:ss")
+);

@@ -1,3 +1,4 @@
+import ansis from 'ansis';
 import { DateTime, Duration } from 'luxon';
 
 const pr: Record<number, string> = {
@@ -52,6 +53,7 @@ export function daylightPlanetyHourDivision(
   riseNextDay: DateTime
 ) {
   // Find the increment of minutes for the daytime hours
+  const now = DateTime.now();
   let durationDay = set.diff(rise, ['minutes']);
   let minutesDay = durationDay.minutes;
   let minutesPerHourDay = minutesDay / 12;
@@ -74,11 +76,13 @@ export function daylightPlanetyHourDivision(
     (res: any, hour: string) => {
       let prev = res[res.length - 1];
       let start = prev == null ? rise : prev.start.plus(perHourDurationDay);
+      const end = start.plus(perHourDurationDay);
       res.push({
         ruler: hour,
         hour: res.length + 1,
-        start: start,
-        end: start.plus(perHourDurationDay),
+        start,
+        end,
+        current: (now >= start && now <= end),
       });
 
       return res;
@@ -93,11 +97,13 @@ export function daylightPlanetyHourDivision(
         prev == null
           ? dayHours[dayHours.length - 1].end // Start with the end of the day hours
           : prev.start.plus(perHourDurationNight);
+          const end = start.plus(perHourDurationNight);
       res.push({
         ruler: hour,
         hour: res.length + 13,
-        start: start,
-        end: start.plus(perHourDurationNight),
+        start,
+        end,
+        current: (now >= start && now <= end),
       });
 
       return res;
@@ -123,7 +129,7 @@ export function planetaryHoursToString(phd: any) {
   let dh = phd.dayHours.reduce((res: any, val: any) => {
     return (
       res +
-      `${val.hour} ${val.ruler}: ${val.start
+      `${val.current ? ansis.whiteBright('→') : ' '} ${val.hour} ${val.ruler}: ${val.start
         .setZone(currentSystemTimezone)
         .toFormat('HH:mm:ss')} to ${val.end
         .setZone(currentSystemTimezone)
@@ -133,7 +139,7 @@ export function planetaryHoursToString(phd: any) {
   let nh = phd.nightHours.reduce((res: any, val: any) => {
     return (
       res +
-      `${val.hour} ${val.ruler}: ${val.start
+      `${val.current ? ansis.whiteBright('→') : ''} ${val.hour} ${val.ruler}: ${val.start
         .setZone(currentSystemTimezone)
         .toFormat('HH:mm:ss')} to ${val.end
         .setZone(currentSystemTimezone)

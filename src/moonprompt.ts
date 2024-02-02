@@ -10,12 +10,20 @@ import {
   TRADITIONAL_7,
   findTimeForLocation,
   moonInfo,
+  riseTimeSun,
+  setTimeSun,
 } from "./bodies";
 import { percentify } from "./common";
 import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "./decans";
 import { program } from "commander";
-import { ASPECT_GLYPHS, COLORED_ASPECT_GLYPHS, aspectsForBodies, multiBodyAspectSearch } from "./aspects";
+import {
+  ASPECT_GLYPHS,
+  COLORED_ASPECT_GLYPHS,
+  aspectsForBodies,
+  multiBodyAspectSearch,
+} from "./aspects";
+import { daylightPlanetyHourDivision } from "./planetary-hours";
 
 program
   .option("-l, --locations <file>", "A path to a locations JSON")
@@ -165,11 +173,59 @@ console.log(line1);
 console.log("       " + line4);
 console.log(line3);
 
-console.log('   Aspects: ' +
-Object.entries(aspectsForBodies(chMoon).moon)
-  .filter(([_, value]) => value?.aspect !== undefined)
-  .reduce((acc, cur) => {
-    return acc + `${BODY_GLYPHS['moon']} ${COLORED_ASPECT_GLYPHS[cur[1].aspect]} ${BODY_GLYPHS[cur[0]]}   `;
-  }, ""));
+console.log(
+  "   Aspects: " +
+    Object.entries(aspectsForBodies(chMoon).moon)
+      .filter(([_, value]) => value?.aspect !== undefined)
+      .reduce((acc, cur) => {
+        return (
+          acc +
+          `${BODY_GLYPHS["moon"]} ${COLORED_ASPECT_GLYPHS[cur[1].aspect]} ${
+            BODY_GLYPHS[cur[0]]
+          }   `
+        );
+      }, "")
+);
 
 // filter((asp) => asp?.aspect !== undefined));
+
+function findMoonHours(phd: any) {
+  const dh = phd.dayHours;
+  const nh = phd.nightHours;
+  const dayMoon = dh.filter((h: { ruler: string }) => h.ruler === "moon")[0];
+  const nightMoon = nh.filter((h: { ruler: string }) => h.ruler === "moon")[0];
+  return { ruler: phd.ruler, dayMoon, nightMoon };
+}
+
+function moonHoursString(mdata: any) {
+  const currentSystemTimezone = DateTime.local().zoneName;
+  let mhs =
+    "   Planetary Ruler of Today: " +
+    ansis.blackBright("[ ") +
+    BODY_GLYPHS[mdata.ruler] +
+    ansis.blackBright(" ]") +
+    "\n     Day Hour of the Moon" +
+    `(${mdata.dayMoon.hour}): ` +
+    `${mdata.dayMoon.start
+      .setZone(currentSystemTimezone)
+      .toFormat("HH:mm:ss")} to ${mdata.dayMoon.end
+      .setZone(currentSystemTimezone)
+      .toFormat("HH:mm:ss")}` +
+    "\n     Night Hour of the Moon" +
+    `(${mdata.nightMoon.hour}): ` +
+    `${mdata.nightMoon.start
+      .setZone(currentSystemTimezone)
+      .toFormat("HH:mm:ss")} to ${mdata.nightMoon.end
+      .setZone(currentSystemTimezone)
+      .toFormat("HH:mm:ss")}`;
+
+  return mhs;
+}
+
+const date = DateTime.local().startOf("day");
+const rt = riseTimeSun(date, [...position, 0]);
+const st = setTimeSun(date, [...position, 0]);
+const rtn = riseTimeSun(date.plus({ days: 1 }), [...position, 0]);
+let phd = daylightPlanetyHourDivision(rt, st, rtn);
+// console.log(findMoonHours(phd));
+console.log(moonHoursString(findMoonHours(phd)));

@@ -192,32 +192,54 @@ console.log(
 function findMoonHours(phd: any) {
   const dh = phd.dayHours;
   const nh = phd.nightHours;
-  const dayMoon = dh.filter((h: { ruler: string }) => h.ruler === "moon")[0];
-  const nightMoon = nh.filter((h: { ruler: string }) => h.ruler === "moon")[0];
-  return { ruler: phd.ruler, dayMoon, nightMoon };
+  const dayMoons = dh.filter((h: { ruler: string }) => h.ruler === "moon");
+  const nightMoons = nh.filter((h: { ruler: string }) => h.ruler === "moon");
+  return { ruler: phd.ruler, dayMoons, nightMoons };
 }
 
 function moonHoursString(mdata: any) {
   const currentSystemTimezone = DateTime.local().zoneName;
+
+  mdata.dayMoons.reduce((acc: string, cur: any) => {
+    acc +
+      "\n     Day Hour of the Moon" +
+      `(${cur.hour}): ` +
+      `${cur.start
+        .setZone(currentSystemTimezone)
+        .toFormat("HH:mm:ss")} to ${cur.end
+        .setZone(currentSystemTimezone)
+        .toFormat("HH:mm:ss")}`;
+  }, "");
+
   let mhs =
     "   Planetary Ruler of Today: " +
     ansis.blackBright("[ ") +
     BODY_GLYPHS[mdata.ruler] +
     ansis.blackBright(" ]") +
-    "\n     Day Hour of the Moon" +
-    `(${mdata.dayMoon.hour}): ` +
-    `${mdata.dayMoon.start
-      .setZone(currentSystemTimezone)
-      .toFormat("HH:mm:ss")} to ${mdata.dayMoon.end
-      .setZone(currentSystemTimezone)
-      .toFormat("HH:mm:ss")}` +
-    "\n     Night Hour of the Moon" +
-    `(${mdata.nightMoon.hour}): ` +
-    `${mdata.nightMoon.start
-      .setZone(currentSystemTimezone)
-      .toFormat("HH:mm:ss")} to ${mdata.nightMoon.end
-      .setZone(currentSystemTimezone)
-      .toFormat("HH:mm:ss")}`;
+    mdata.dayMoons.reduce((acc: string, cur: any) => {
+      return (
+        acc +
+        "\n     Day Hour of the Moon" +
+        `(${cur.hour}): ` +
+        `${cur.start
+          .setZone(currentSystemTimezone)
+          .toFormat("HH:mm:ss")} to ${cur.end
+          .setZone(currentSystemTimezone)
+          .toFormat("HH:mm:ss")}`
+      );
+    }, "") +
+    mdata.nightMoons.reduce((acc: string, cur: any) => {
+      return (
+        acc +
+        "\n     Night Hour of the Moon" +
+        `(${cur.hour}): ` +
+        `${cur.start
+          .setZone(currentSystemTimezone)
+          .toFormat("HH:mm:ss")} to ${cur.end
+          .setZone(currentSystemTimezone)
+          .toFormat("HH:mm:ss")}`
+      );
+    }, "");
 
   return mhs;
 }

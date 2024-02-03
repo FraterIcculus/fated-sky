@@ -215,19 +215,23 @@ function timeColorFn(start: DateTime, end: DateTime, cmp: DateTime) {
 }
 
 function moonHoursString(mdata: any) {
+  let firstMh = false;
+  let nextMh = false;
   let mhs =
     "   Planetary Ruler of Today: " +
     ansis.blackBright("[ ") +
     BODY_GLYPHS[mdata.ruler] +
     ansis.blackBright(" ]") +
     mdata.dayMoons.reduce((acc: string, cur: any) => {
+      nextMh = (!firstMh && (runTime <= cur.start));
+      if (nextMh) { firstMh = true;}
       return timeColorFn(
         cur.start,
         cur.end,
         runTime
       )(
         acc +
-          "\n     Day Hour of the Moon" +
+          `\n   ${nextMh ? ansis.whiteBright("→ ") : "  "}Day Hour of the Moon` +
           `(${cur.hour}): ` +
           `${cur.start
             .setZone(currentSystemTimezone)
@@ -237,9 +241,11 @@ function moonHoursString(mdata: any) {
       );
     }, "") +
     mdata.nightMoons.reduce((acc: string, cur: any) => {
+      nextMh = (!firstMh && (runTime <= cur.start));
+      if (nextMh) { firstMh = true;}
       return (
         acc +
-        "\n     Night Hour of the Moon" +
+        `\n   ${nextMh ? ansis.whiteBright("→ ") : "  "}Night Hour of the Moon` +
         `(${cur.hour}): ` +
         timeColorFn(
           cur.start,

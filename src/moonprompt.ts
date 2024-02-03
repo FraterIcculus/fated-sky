@@ -200,33 +200,40 @@ function findMoonHours(phd: any) {
   return { ruler: phd.ruler, dayMoons, nightMoons };
 }
 
-function moonHoursString(mdata: any) {
-  mdata.dayMoons.reduce((acc: string, cur: any) => {
-    acc +
-      "\n     Day Hour of the Moon" +
-      `(${cur.hour}): ` +
-      `${cur.start
-        .setZone(currentSystemTimezone)
-        .toFormat("HH:mm:ss")} to ${cur.end
-        .setZone(currentSystemTimezone)
-        .toFormat("HH:mm:ss")}`;
-  }, "");
+function timeColorFn(start: DateTime, end: DateTime, cmp: DateTime) {
+  if (cmp >= start && cmp <= end) {
+    // during
+    return ansis.whiteBright;
+  } else if (cmp > end) {
+    // after
+    return ansis.blackBright;
+  } else if (cmp < start) {
+    // before
+    return ansis.white;
+  }
+  return ansis.white;
+}
 
+function moonHoursString(mdata: any) {
   let mhs =
     "   Planetary Ruler of Today: " +
     ansis.blackBright("[ ") +
     BODY_GLYPHS[mdata.ruler] +
     ansis.blackBright(" ]") +
     mdata.dayMoons.reduce((acc: string, cur: any) => {
-      return (
+      return timeColorFn(
+        cur.start,
+        cur.end,
+        runTime
+      )(
         acc +
-        "\n     Day Hour of the Moon" +
-        `(${cur.hour}): ` +
-        `${cur.start
-          .setZone(currentSystemTimezone)
-          .toFormat("HH:mm:ss")} to ${cur.end
-          .setZone(currentSystemTimezone)
-          .toFormat("HH:mm:ss")}`
+          "\n     Day Hour of the Moon" +
+          `(${cur.hour}): ` +
+          `${cur.start
+            .setZone(currentSystemTimezone)
+            .toFormat("HH:mm:ss")} to ${cur.end
+            .setZone(currentSystemTimezone)
+            .toFormat("HH:mm:ss")}`
       );
     }, "") +
     mdata.nightMoons.reduce((acc: string, cur: any) => {
@@ -234,11 +241,17 @@ function moonHoursString(mdata: any) {
         acc +
         "\n     Night Hour of the Moon" +
         `(${cur.hour}): ` +
-        `${cur.start
-          .setZone(currentSystemTimezone)
-          .toFormat("HH:mm:ss")} to ${cur.end
-          .setZone(currentSystemTimezone)
-          .toFormat("HH:mm:ss")}`
+        timeColorFn(
+          cur.start,
+          cur.end,
+          runTime
+        )(
+          `${cur.start
+            .setZone(currentSystemTimezone)
+            .toFormat("HH:mm:ss")} to ${cur.end
+            .setZone(currentSystemTimezone)
+            .toFormat("HH:mm:ss")}`
+        )
       );
     }, "");
 
@@ -253,5 +266,6 @@ let phd = daylightPlanetyHourDivision(rt, st, rtn);
 // console.log(findMoonHours(phd));
 console.log(moonHoursString(findMoonHours(phd)));
 console.log(
-  "     Current Time: " + runTime.setZone(currentSystemTimezone).toFormat("HH:mm:ss")
+  "     Current Time: " +
+    runTime.setZone(currentSystemTimezone).toFormat("HH:mm:ss")
 );

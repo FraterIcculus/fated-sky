@@ -223,15 +223,19 @@ function moonHoursString(mdata: any) {
     BODY_GLYPHS[mdata.ruler] +
     ansis.blackBright(" ]") +
     mdata.dayMoons.reduce((acc: string, cur: any) => {
-      nextMh = (!firstMh && (runTime <= cur.start));
-      if (nextMh) { firstMh = true;}
+      nextMh = !firstMh && runTime <= cur.end;
+      if (nextMh) {
+        firstMh = true;
+      }
       return timeColorFn(
         cur.start,
         cur.end,
         runTime
       )(
         acc +
-          `\n   ${nextMh ? ansis.whiteBright("→ ") : "  "}Day Hour of the Moon` +
+          `\n   ${
+            nextMh ? ansis.whiteBright("→ ") : "  "
+          }Day Hour of the Moon` +
           `(${cur.hour}): ` +
           `${cur.start
             .setZone(currentSystemTimezone)
@@ -241,23 +245,25 @@ function moonHoursString(mdata: any) {
       );
     }, "") +
     mdata.nightMoons.reduce((acc: string, cur: any) => {
-      nextMh = (!firstMh && (runTime <= cur.start));
-      if (nextMh) { firstMh = true;}
-      return (
+      nextMh = !firstMh && runTime <= cur.end;
+      if (nextMh) {
+        firstMh = true;
+      }
+      return timeColorFn(
+        cur.start,
+        cur.end,
+        runTime
+      )(
         acc +
-        `\n   ${nextMh ? ansis.whiteBright("→ ") : "  "}Night Hour of the Moon` +
-        `(${cur.hour}): ` +
-        timeColorFn(
-          cur.start,
-          cur.end,
-          runTime
-        )(
+          `\n   ${
+            nextMh ? ansis.whiteBright("→ ") : "  "
+          }Night Hour of the Moon` +
+          `(${cur.hour}): ` +
           `${cur.start
             .setZone(currentSystemTimezone)
             .toFormat("HH:mm:ss")} to ${cur.end
             .setZone(currentSystemTimezone)
             .toFormat("HH:mm:ss")}`
-        )
       );
     }, "");
 

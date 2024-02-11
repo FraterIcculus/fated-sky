@@ -80,10 +80,9 @@ const moonInNextHouseDT = findTimeForLocation(
   "moon",
   runTime,
   runTime.plus({ days: 60 }),
-  houseStart + 30,
+  (houseStart + 30) % 360, // This may be a bug in findTimeForLocation(), more investigation needed.
   false
 );
-//console.dir(locDt);
 
 // the moon, when it's in the next house.
 const nhMoon = getBodiesHousePositions(

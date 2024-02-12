@@ -21,10 +21,8 @@ export const BODY_GLYPHS: { [key: string]: string } = {
   pluto: "♇",
   chiron: "⚷",
   asc: "⇧",
-  mc: "⇪" // Alternatively, MC (Midheaven) is often represented as "MC"
+  mc: "⇪", // Alternatively, MC (Midheaven) is often represented as "MC"
 };
-
-
 
 export type Body =
   | "asc"
@@ -41,7 +39,15 @@ export type Body =
   | "pluto"
   | "chiron";
 
-export const TRADITIONAL_7 = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"]
+export const TRADITIONAL_7 = [
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+];
 
 export type PlanetDignities = {
   rulership: number[];
@@ -52,49 +58,48 @@ export type PlanetDignities = {
 
 export const PLANET_DIGNITIES: { [planet: string]: PlanetDignities } = {
   sun: {
-      rulership: [5], // Leo
-      exaltation: [1], // Aries
-      detriment: [11], // Aquarius
-      fall: [7] // Libra
+    rulership: [5], // Leo
+    exaltation: [1], // Aries
+    detriment: [11], // Aquarius
+    fall: [7], // Libra
   },
   moon: {
-      rulership: [4], // Cancer
-      exaltation: [2], // Taurus
-      detriment: [10], // Capricorn
-      fall: [8] // Scorpio
+    rulership: [4], // Cancer
+    exaltation: [2], // Taurus
+    detriment: [10], // Capricorn
+    fall: [8], // Scorpio
   },
   mercury: {
-      rulership: [3, 6], // Gemini, Virgo
-      exaltation: [],
-      detriment: [9, 12], // Sagittarius, Pisces
-      fall: []
+    rulership: [3, 6], // Gemini, Virgo
+    exaltation: [],
+    detriment: [9, 12], // Sagittarius, Pisces
+    fall: [],
   },
   venus: {
-      rulership: [2, 7], // Taurus, Libra
-      exaltation: [12], // Pisces
-      detriment: [8, 1], // Scorpio, Aries
-      fall: [6] // Virgo
+    rulership: [2, 7], // Taurus, Libra
+    exaltation: [12], // Pisces
+    detriment: [8, 1], // Scorpio, Aries
+    fall: [6], // Virgo
   },
   mars: {
-      rulership: [1, 8], // Aries, Scorpio
-      exaltation: [10], // Capricorn
-      detriment: [7, 2], // Libra, Taurus
-      fall: [4] // Cancer
+    rulership: [1, 8], // Aries, Scorpio
+    exaltation: [10], // Capricorn
+    detriment: [7, 2], // Libra, Taurus
+    fall: [4], // Cancer
   },
   jupiter: {
-      rulership: [9, 12], // Sagittarius, Pisces
-      exaltation: [4], // Cancer
-      detriment: [3, 6], // Gemini, Virgo
-      fall: [10] // Capricorn
+    rulership: [9, 12], // Sagittarius, Pisces
+    exaltation: [4], // Cancer
+    detriment: [3, 6], // Gemini, Virgo
+    fall: [10], // Capricorn
   },
   saturn: {
-      rulership: [10, 11], // Capricorn, Aquarius
-      exaltation: [7], // Libra
-      detriment: [4, 5], // Cancer, Leo
-      fall: [1] // Aries
-  }
+    rulership: [10, 11], // Capricorn, Aquarius
+    exaltation: [7], // Libra
+    detriment: [4, 5], // Cancer, Leo
+    fall: [1], // Aries
+  },
 };
-
 
 /**
  * ### Description
@@ -224,6 +229,12 @@ export function getBodyPositionZodiacal(start: DateTime, bodyName: Body): any {
   return bodyPosition;
 }
 
+// At the 0/360 boundary, we need to check if we're at 0/360 since
+// never get 360 back from sweph.
+function circleTargetZero(bLon: number, targetDegrees: number): boolean {
+  return targetDegrees === 360 && bLon > 0 && bLon < 1;
+}
+
 export function findTimeForLocation(
   bodyName: Body,
   start: DateTime,
@@ -248,8 +259,10 @@ export function findTimeForLocation(
     bLon >= targetDegrees ? degreesFromTarget : 360 + degreesFromTarget;
 
   if (
-    (fwdDegreesToTarget <= tolerance && bLon >= targetDegrees) ||
-    (bkwDegreesToTarget <= tolerance && bLon >= targetDegrees) ||
+    (fwdDegreesToTarget <= tolerance &&
+      (bLon >= targetDegrees || circleTargetZero(bLon, targetDegrees))) ||
+    (bkwDegreesToTarget <= tolerance &&
+      (bLon >= targetDegrees || circleTargetZero(bLon, targetDegrees))) ||
     cycle >= maxCycles
   ) {
     // console.log(

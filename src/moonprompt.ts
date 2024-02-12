@@ -80,7 +80,7 @@ const moonInNextHouseDT = findTimeForLocation(
   "moon",
   runTime,
   runTime.plus({ days: 60 }),
-  (houseStart + 30) % 360, // This may be a bug in findTimeForLocation(), more investigation needed.
+  houseStart + 30,
   false
 );
 

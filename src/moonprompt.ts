@@ -1,8 +1,6 @@
 #!/usr/bin/env node
-import sweph from "sweph";
 import { ZODIAC_INFO, getBodiesHousePositions } from "./houses";
 import { DateTime } from "luxon";
-import { readFileSync } from "fs";
 import { getMansionFromPosition } from "./mansions";
 import {
   BODY_GLYPHS,
@@ -16,7 +14,6 @@ import {
 import { percentify } from "./common";
 import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "./decans";
-import { program } from "commander";
 import {
   ASPECT_GLYPHS,
   COLORED_ASPECT_GLYPHS,
@@ -24,42 +21,9 @@ import {
   multiBodyAspectSearch,
 } from "./aspects";
 import { daylightPlanetyHourDivision } from "./planetary-hours";
+import { options } from "./abstractions/cmd";
 
-program
-  .option("-l, --locations <file>", "A path to a locations JSON")
-  .option("-n, --name <name>", "The location key name to use")
-  .option("-g, --geo <long,lat>", "Geographic location: long,lat")
-  .option("-e, --ephe <filepath>", "The path to the Swiss Ephemeris data files")
-  .parse(process.argv);
-
-const options = program.opts();
-
-let position: [number, number];
-
-if (options.geo) {
-  position = (options.geo as string)
-    .split(",")
-    .map((s) => parseFloat(s.trim())) as [number, number];
-} else if (options.locations && options.name) {
-  const positions: Record<string, [number, number, number]> = JSON.parse(
-    readFileSync(options.locations, { encoding: "utf8", flag: "r" })
-  );
-  position = positions[options.name].slice(0, -1) as [number, number];
-} else {
-  console.error(
-    "Error: you must provide either --geo, or --locations & --name."
-  );
-  process.exit(1);
-}
-
-if (options.ephe) {
-  sweph.set_ephe_path(options.ephe);
-} else {
-  console.error(
-    "Error: You must provide a path to Swiss Ephemeris data files."
-  );
-  process.exit(1);
-}
+const position = options.position;
 
 const runTime = DateTime.now();
 const currentSystemTimezone = runTime.toLocal().zoneName;
@@ -270,9 +234,9 @@ function moonHoursString(mdata: any) {
 }
 
 const date = runTime.toLocal().startOf("day");
-const rt = riseTimeSun(date, [...position, 0]);
-const st = setTimeSun(date, [...position, 0]);
-const rtn = riseTimeSun(date.plus({ days: 1 }), [...position, 0]);
+const rt = riseTimeSun(date, position);
+const st = setTimeSun(date, position);
+const rtn = riseTimeSun(date.plus({ days: 1 }), position);
 let phd = daylightPlanetyHourDivision(rt, st, rtn);
 // console.log(findMoonHours(phd));
 console.log(moonHoursString(findMoonHours(phd)));

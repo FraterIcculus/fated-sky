@@ -3,22 +3,14 @@ import {
   BodyHousePosition,
   BodyHousePositions,
   ZODIAC_INFO,
-  astroLocationToDegrees,
   getBodiesHousePositions,
 } from "../houses";
-import { DateTime } from "luxon";
-import { getMansionFromPosition } from "../mansions";
 import {
   BODY_GLYPHS,
   Body,
   PLANET_DIGNITIES,
   STANDARD_11,
-  findTimeForLocation,
-  moonInfo,
-  riseTimeSun,
-  setTimeSun,
 } from "../bodies";
-import { percentify } from "../common";
 import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "../decans";
 import {
@@ -27,10 +19,8 @@ import {
   aspectsForBodies,
   multiBodyAspectSearch,
 } from "../aspects";
-import { daylightPlanetyHourDivision } from "../planetary-hours";
 import { options } from "../abstractions/cmd";
 
-const position = options.position;
 const currentSystemTimezone = options.time.toLocal().zoneName;
 
 // the current house Moon.

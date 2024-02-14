@@ -28,7 +28,6 @@ if (options.geo) {
   if (options.position[2] === undefined) {
     options.position[2] = 0;
   }
-  console.dir(options.position);
 } else if (options.locations && options.name) {
   const positions: Record<string, [number, number, number]> = JSON.parse(
     readFileSync(options.locations, { encoding: "utf8", flag: "r" })

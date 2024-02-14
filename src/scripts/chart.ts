@@ -5,12 +5,7 @@ import {
   ZODIAC_INFO,
   getBodiesHousePositions,
 } from "../houses";
-import {
-  BODY_GLYPHS,
-  Body,
-  PLANET_DIGNITIES,
-  STANDARD_11,
-} from "../bodies";
+import { BODY_GLYPHS, Body, PLANET_DIGNITIES, STANDARD_11 } from "../bodies";
 import ansis from "ansis";
 import { DECAN_RULER_LOOKUP } from "../decans";
 import {
@@ -80,30 +75,43 @@ const out3 = ["uranus", "neptune", "pluto"] as Body[];
 const aspectBodies = big3.slice(1).concat(std5, out3);
 
 console.log(
-    ansis.blackBright`[ ${ansis.cyanBright(
-        options.time.toFormat("yyyy-MM-dd HH:mm:ss")
-      )} ] ` +
-  
-  formatBodyPositions(big3, bodyPositions) 
+  ansis.blackBright`[ ${ansis.cyanBright(
+    options.time.toFormat("yyyy-MM-dd HH:mm:ss")
+  )} ] ` + formatBodyPositions(big3, bodyPositions)
 );
 console.log(formatBodyPositions(std5, bodyPositions));
 console.log(formatBodyPositions(out3, bodyPositions));
 
-const {asc, ...bpNoAsc} = bodyPositions;
+const { asc, ...bpNoAsc } = bodyPositions;
 const aspects = aspectsForBodies(bpNoAsc);
 
-const aspectString = aspectBodies.reduce( (acc:string, bodyName) => {
-    return acc + Object.entries(aspects[bodyName])
-    .filter(([_, value]) => value?.aspect !== undefined)
-    .reduce((asp, cur) => {
-      return (
-        asp +
-        `${BODY_GLYPHS[bodyName]} ${COLORED_ASPECT_GLYPHS[cur[1].aspect]} ${
-          BODY_GLYPHS[cur[0]]
-        }   `
-      );
-    }, "");
-}, "")
+const aspected = new Set();
+let counter = 0;
+const aspectString = aspectBodies.reduce((acc: string, bodyName) => {
+  return (
+    acc +
+    Object.entries(aspects[bodyName])
+      .filter(([_, value]) => value?.aspect !== undefined)
+      .reduce((asp, cur) => {
+        const keyF = `${bodyName}_${cur[0]}`;
+        const keyR = `${cur[0]}_${bodyName}`;
+        // console.log(`key: ${keyF} / ${keyR}`);
+        if (aspected.has(keyF) || aspected.has(keyR)) {
+          return asp;
+        } else {
+          aspected.add(keyF);
+          aspected.add(keyR);
+          counter = counter + 1;
+          return (
+            asp +
+            `${BODY_GLYPHS[bodyName]} ${COLORED_ASPECT_GLYPHS[cur[1].aspect]} ${
+              BODY_GLYPHS[cur[0]]
+            }   ` +
+            (counter % 7 === 0 ? "\n" : "")
+          );
+        }
+      }, "")
+  );
+}, "");
 
 console.log(aspectString);
-// console.dir(aspects);

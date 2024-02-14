@@ -4,7 +4,6 @@ import { toJulianDate } from './dates';
 import {
   BODY_NAME_SWISS_EPH_CONST,
   Position,
-  round5,
   toDegMinSec,
 } from './common';
 import { Body } from './bodies';
@@ -271,7 +270,7 @@ export function aspectsForBodies(
         // Inner
         if (bodyName !== iBodyName && iBodyName !== 'cusps') {
           let b2 = bodies[iBodyName as Body];
-          let angle = makeAngle(b1.position.raw, b2.position.raw);
+          let angle = makeAngle(b1!.position.raw, b2!.position.raw);
           let aspect = getZodicalAspect(
             angle,
             bodyName as Body,

@@ -166,7 +166,7 @@ export type BodyHousePosition = {
 };
 
 export type BodyHousePositions = {
-  [K in Body]: BodyHousePosition;
+  [K in Body]?: BodyHousePosition;
 } & { cusps: number[] };
 
 export function getHouseData(

@@ -67,7 +67,7 @@ function formatBodyPositions(names: Body[], bps: BodyHousePositions) {
       acc +
       formatBody(name) +
       " " +
-      formatBodyPos(bps[name]) +
+      formatBodyPos(bps[name]!) +
       (idx + 1 < names.length ? " . " : "")
     );
   }, "");
@@ -77,12 +77,33 @@ function formatBodyPositions(names: Body[], bps: BodyHousePositions) {
 const big3 = ["asc", "sun", "moon"] as Body[];
 const std5 = ["mercury", "venus", "mars", "jupiter", "saturn"] as Body[];
 const out3 = ["uranus", "neptune", "pluto"] as Body[];
+const aspectBodies = big3.slice(1).concat(std5, out3);
 
 console.log(
-  formatBodyPositions(big3, bodyPositions) +
-    ansis.blackBright` - [ ${ansis.whiteBright(
-      options.time.toFormat("yyyy-MM-dd HH:mm:ss")
-    )} ]`
+    ansis.blackBright`[ ${ansis.cyanBright(
+        options.time.toFormat("yyyy-MM-dd HH:mm:ss")
+      )} ] ` +
+  
+  formatBodyPositions(big3, bodyPositions) 
 );
 console.log(formatBodyPositions(std5, bodyPositions));
 console.log(formatBodyPositions(out3, bodyPositions));
+
+
+const {asc, ...bpNoAsc} = bodyPositions;
+const aspects = aspectsForBodies(bpNoAsc);
+
+const aspectString = aspectBodies.reduce( (acc:string, bodyName) => {
+    return acc + Object.entries(aspects[bodyName])
+    .filter(([_, value]) => value?.aspect !== undefined)
+    .reduce((asp, cur) => {
+      return (
+        asp +
+        `${BODY_GLYPHS[bodyName]} ${COLORED_ASPECT_GLYPHS[cur[1].aspect]} ${
+          BODY_GLYPHS[cur[0]]
+        }   `
+      );
+    }, "");
+}, "")
+
+console.log(aspectString);  

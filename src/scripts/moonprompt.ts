@@ -30,14 +30,14 @@ const currentSystemTimezone = runTime.toLocal().zoneName;
 
 // the current house Moon.
 const chMoon = getBodiesHousePositions(runTime, position, TRADITIONAL_7);
-const mansion = getMansionFromPosition(chMoon.moon.position);
+const mansion = getMansionFromPosition(chMoon.moon!.position);
 const moonPhase = moonInfo(runTime);
 
 // console.dir(moon);
 // console.dir(moonPhase);
 // console.dir(mansion);
 
-const currentMoonPosition = chMoon.moon.position.raw;
+const currentMoonPosition = chMoon.moon!.position.raw;
 const houseStart = Math.trunc(currentMoonPosition / 30) * 30;
 
 const moonInNextHouseDT = findTimeForLocation(
@@ -92,7 +92,7 @@ function getSignElement(house: number) {
 
 let decanRuler =
   DECAN_RULER_LOOKUP[
-    `${chMoon.moon.house.abbreviation.toLowerCase()}${chMoon.moon.decan}`
+    `${chMoon.moon!.house.abbreviation.toLowerCase()}${chMoon.moon!.decan}`
   ];
 
 if (decanRuler === "Moon") {
@@ -108,19 +108,19 @@ const line1 =
   ansis.blackBright("lum ") +
   (moonPhase.waxing ? ansis.blueBright("↑") : ansis.blue("↓")) +
   " in decan " +
-  chMoon.moon.decan +
+  chMoon.moon!.decan +
   " of " +
-  chMoon.moon.house.glyph +
+  chMoon.moon!.house.glyph +
   "[" +
-  getDignityCode(chMoon.moon.house.number) +
+  getDignityCode(chMoon.moon!.house.number) +
   "]" +
-  getSignElement(chMoon.moon.house.number);
+  getSignElement(chMoon.moon!.house.number);
 
 const line4 =
   ansis.blackBright(".") +
   ansis.white("o") +
   ansis.whiteBright("(") +
-  `${chMoon.moon.house.name} ${chMoon.moon.decan}` +
+  `${chMoon.moon!.house.name} ${chMoon.moon!.decan}` +
   ` ruled by ${decanRuler}` +
   ansis.whiteBright(")") +
   ansis.white("o") +
@@ -129,9 +129,9 @@ const line4 =
 const line2 = `${moonPhase.phaseEmoji} in Mansion ${mansion.mansion}: ${mansion.name} : ${mansion.meaning}`;
 
 const line3 = `${moonPhase2.phaseEmoji} → ${
-  nhMoon.moon.house.glyph
-}[${getDignityCode(nhMoon.moon.house.number)}]  ${getSignElement(
-  nhMoon.moon.house.number
+  nhMoon.moon!.house.glyph
+}[${getDignityCode(nhMoon.moon!.house.number)}]  ${getSignElement(
+  nhMoon.moon!.house.number
 )} @ ${moonInNextHouseDT}`;
 
 console.log(line2);

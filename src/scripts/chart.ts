@@ -89,7 +89,6 @@ console.log(
 console.log(formatBodyPositions(std5, bodyPositions));
 console.log(formatBodyPositions(out3, bodyPositions));
 
-
 const {asc, ...bpNoAsc} = bodyPositions;
 const aspects = aspectsForBodies(bpNoAsc);
 
@@ -106,4 +105,5 @@ const aspectString = aspectBodies.reduce( (acc:string, bodyName) => {
     }, "");
 }, "")
 
-console.log(aspectString);  
+console.log(aspectString);
+// console.dir(aspects);

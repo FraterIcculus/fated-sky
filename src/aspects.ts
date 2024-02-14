@@ -1,13 +1,9 @@
-import { constants, calc_ut } from 'sweph';
-import { DateTime, Duration } from 'luxon';
-import { toJulianDate } from './dates';
-import {
-  BODY_NAME_SWISS_EPH_CONST,
-  Position,
-  toDegMinSec,
-} from './common';
-import { Body } from './bodies';
-import { BodyHousePositions } from './houses';
+import { constants, calc_ut } from "sweph";
+import { DateTime, Duration } from "luxon";
+import { toJulianDate } from "./dates";
+import { BODY_NAME_SWISS_EPH_CONST, Position, toDegMinSec } from "./common";
+import { Body } from "./bodies";
+import { BodyHousePositions } from "./houses";
 import ansis from "ansis";
 
 export const ASPECT_GLYPHS: { [key: string]: string } = {
@@ -16,7 +12,7 @@ export const ASPECT_GLYPHS: { [key: string]: string } = {
   squ: "□", // Square
   tri: "△", // Trine
   sex: "⚹", // Sextile
-  sem: "∠"  // Semisquare 
+  sem: "∠", // Semisquare
 };
 
 export const COLORED_ASPECT_GLYPHS: { [key: string]: string } = {
@@ -25,10 +21,10 @@ export const COLORED_ASPECT_GLYPHS: { [key: string]: string } = {
   squ: ansis.redBright("□"), // Square
   tri: ansis.greenBright("△"), // Trine
   sex: ansis.green("⚹"), // Sextile
-  sem: ansis.red("∠")  // Semisquare 
-}
+  sem: ansis.red("∠"), // Semisquare
+};
 
-type AspectType = 'con' | 'opp' | 'squ' | 'tri' | 'sex' | 'sem';
+type AspectType = "con" | "opp" | "squ" | "tri" | "sex" | "sem";
 type Angle = { degrees: number; minutes: number; seconds: number; raw: number };
 type Aspect = {
   aspect: string;
@@ -40,7 +36,11 @@ type Aspects = {
   };
 };
 
-export const ORBS_CON_OPP_SQ_TRI = {
+export type Orbs = {
+  [K in Body]?: number;
+} & { default: number };
+
+export const ORBS_CON_OPP_SQ_TRI: Orbs = {
   default: 10,
   sun: 10,
   moon: 10,
@@ -55,7 +55,7 @@ export const ORBS_CON_OPP_SQ_TRI = {
   chiron: 10,
 };
 
-export const ORBS_SEX = {
+export const ORBS_SEX: Orbs = {
   default: 6,
   sun: 6,
   moon: 6,
@@ -70,7 +70,7 @@ export const ORBS_SEX = {
   chiron: 6,
 };
 
-export const ORBS_SEM = {
+export const ORBS_SEM: Orbs = {
   default: 3,
   sun: 3,
   moon: 3,
@@ -85,7 +85,9 @@ export const ORBS_SEM = {
   chiron: 3,
 };
 
-export const ASPECTS: Record<AspectType, { angle: number; orb: any }> = {
+export type AspectCmp = { angle: number; orb: Orbs };
+
+export const ASPECTS: Record<AspectType, { angle: number; orb: Orbs }> = {
   con: { angle: 0, orb: { ...ORBS_CON_OPP_SQ_TRI } },
   opp: { angle: 180, orb: { ...ORBS_CON_OPP_SQ_TRI } },
   squ: { angle: 90, orb: { ...ORBS_CON_OPP_SQ_TRI } },
@@ -93,6 +95,22 @@ export const ASPECTS: Record<AspectType, { angle: number; orb: any }> = {
   sex: { angle: 60, orb: { ...ORBS_SEX } },
   sem: { angle: 30, orb: { ...ORBS_SEM } },
 };
+
+function isAspect(orb: number, aspectAngle: number, compareAngle: number) {
+  // Both sides of the orb
+  if (compareAngle >= aspectAngle - orb && compareAngle <= aspectAngle + orb) {
+    return true;
+  }
+  // The other direction, both sides of the orb.
+  else if (
+    360 - compareAngle >= aspectAngle - orb &&
+    360 - compareAngle <= aspectAngle + orb
+  ) {
+    return true;
+  }
+
+  return false;
+}
 
 /**
  *
@@ -113,8 +131,8 @@ export function getZodicalAspect(
     let va = v as any;
     const aspectAngle = va.angle;
     let orb = Math.max(va.orb[bodyOne], va.orb[bodyTwo]);
-    orb = !Number.isNaN(orb) ? orb : va.orb['default'];
-    if (cmpAngle >= aspectAngle - orb && cmpAngle <= aspectAngle + orb) {
+    orb = !Number.isNaN(orb) ? orb : va.orb["default"];
+    if (isAspect(orb, aspectAngle, cmpAngle)) {
       let angleOrb = cmpAngle - aspectAngle;
       // console.log(
       //   `Found: ${aspect} orb ${JSON.stringify(
@@ -264,11 +282,11 @@ export function aspectsForBodies(
   aspects: any = ASPECTS
 ): Aspects {
   return Object.keys(bodies).reduce((acc: any, bodyName: string) => {
-    if (bodyName !== 'cusps') {
+    if (bodyName !== "cusps") {
       let b1 = bodies[bodyName as Body];
       let iacc = Object.keys(bodies).reduce((iacc: any, iBodyName: string) => {
         // Inner
-        if (bodyName !== iBodyName && iBodyName !== 'cusps') {
+        if (bodyName !== iBodyName && iBodyName !== "cusps") {
           let b2 = bodies[iBodyName as Body];
           let angle = makeAngle(b1!.position.raw, b2!.position.raw);
           let aspect = getZodicalAspect(

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { ZODIAC_INFO, getBodiesHousePositions } from "./houses";
+import { ZODIAC_INFO, getBodiesHousePositions } from "../houses";
 import { DateTime } from "luxon";
-import { getMansionFromPosition } from "./mansions";
+import { getMansionFromPosition } from "../mansions";
 import {
   BODY_GLYPHS,
   PLANET_DIGNITIES,
@@ -10,18 +10,18 @@ import {
   moonInfo,
   riseTimeSun,
   setTimeSun,
-} from "./bodies";
-import { percentify } from "./common";
+} from "../bodies";
+import { percentify } from "../common";
 import ansis from "ansis";
-import { DECAN_RULER_LOOKUP } from "./decans";
+import { DECAN_RULER_LOOKUP } from "../decans";
 import {
   ASPECT_GLYPHS,
   COLORED_ASPECT_GLYPHS,
   aspectsForBodies,
   multiBodyAspectSearch,
-} from "./aspects";
-import { daylightPlanetyHourDivision } from "./planetary-hours";
-import { options } from "./abstractions/cmd";
+} from "../aspects";
+import { daylightPlanetyHourDivision } from "../planetary-hours";
+import { options } from "../abstractions/cmd";
 
 const position = options.position;
 

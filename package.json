@@ -1,10 +1,11 @@
 {
   "scripts": {
     "build": "tsc",
-    "moonprompt:start": "ts-node src/moonprompt.ts",
-    "phours:start": "ts-node src/phours.ts",
-    "moonprompt:dev": "nodemon -e json,ts --exec 'ts-node src/moonprompt.ts -g '-74.006,40.7128' -e ./ephe'",
-    "phours:dev": "nodemon -e json,ts --exec 'ts-node src/phours.ts -g '-74.006,40.7128,300' -e ./ephe'"
+    "moonprompt:start": "ts-node src/scripts/moonprompt.ts",
+    "phours:start": "ts-node src/scripts/phours.ts",
+    "moonprompt:dev": "nodemon -e json,ts --exec 'ts-node src/scripts/moonprompt.ts -g '-74.006,40.7128' -e ./ephe'",
+    "phours:dev": "nodemon -e json,ts --exec 'ts-node src/scripts/phours.ts -g '-74.006,40.7128,300' -e ./ephe'",
+    "chart:dev": "nodemon -e json,ts --exec 'ts-node src/scripts/chart.ts -g '-74.006,40.7128,300' -e ./ephe'"
   },
   "devDependencies": {
     "@types/luxon": "^3.4.2",

@@ -49,6 +49,20 @@ export const TRADITIONAL_7 = [
   "saturn",
 ];
 
+export const STANDARD_11 = [
+  "asc",
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto"
+];
+
 export type PlanetDignities = {
   rulership: number[];
   exaltation: number[];

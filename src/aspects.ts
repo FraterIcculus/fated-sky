@@ -8,7 +8,7 @@ import {
   toDegMinSec,
 } from './common';
 import { Body } from './bodies';
-import { BodyHousePosition } from './houses';
+import { BodyHousePositions } from './houses';
 import ansis from "ansis";
 
 export const ASPECT_GLYPHS: { [key: string]: string } = {
@@ -261,7 +261,7 @@ export function summarizeAspectSearch(search: Map<DateTime, any | undefined>) {
  * @returns
  */
 export function aspectsForBodies(
-  bodies: BodyHousePosition,
+  bodies: BodyHousePositions,
   aspects: any = ASPECTS
 ): Aspects {
   return Object.keys(bodies).reduce((acc: any, bodyName: string) => {

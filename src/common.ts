@@ -1,5 +1,5 @@
-import sweph, { constants, } from 'sweph';
-import { Body } from './bodies';
+import sweph, { constants } from "sweph";
+import { Body } from "./bodies";
 
 export const STANDARD_FLAGS = constants.SEFLG_SWIEPH | constants.SEFLG_SPEED;
 
@@ -7,19 +7,19 @@ export const STANDARD_FLAGS = constants.SEFLG_SWIEPH | constants.SEFLG_SPEED;
 export const OBLIQUITY = 23.4;
 
 export const BODIES: Body[] = [
-  'asc',
-  'mc',
-  'sun',
-  'moon',
-  'mercury',
-  'venus',
-  'mars',
-  'jupiter',
-  'saturn',
-  'uranus',
-  'neptune',
-  'pluto',
-  'chiron',
+  "asc",
+  "mc",
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto",
+  "chiron",
 ];
 
 export const BODY_NAME_SWISS_EPH_CONST: Record<string, number> = {
@@ -68,7 +68,7 @@ export function round3(x: number) {
 }
 
 export function percentify(x: number) {
-  return (x * 100).toFixed(1); 
+  return (x * 100).toFixed(1);
 }
 
 export function toDegMinSec(decimal: number): Position {

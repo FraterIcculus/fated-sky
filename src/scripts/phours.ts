@@ -2,9 +2,9 @@ import { DateTime } from "luxon";
 import {
   daylightPlanetyHourDivision,
   planetaryHoursToString,
-} from "./planetary-hours";
-import { riseTimeSun, setTimeSun } from "./bodies";
-import { program, options } from "./abstractions/cmd";
+} from "../planetary-hours";
+import { riseTimeSun, setTimeSun } from "../bodies";
+import { program, options } from "../abstractions/cmd";
 
 program
   .name("phours")

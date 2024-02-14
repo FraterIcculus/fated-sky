@@ -30,20 +30,79 @@ type PlanetDignity = {
 };
 
 export const ZODIAC_DIGNITY: { [index: number]: PlanetDignity } = {
-  1: { rulership: "Mars", exaltation: "Sun", detriment: "Venus", fall: "Saturn" }, // Aries
-  2: { rulership: "Venus", exaltation: "Moon", detriment: "Mars", fall: "none" }, // Taurus
-  3: { rulership: "Mercury", exaltation: "none", detriment: "Jupiter", fall: "none" }, // Gemini
-  4: { rulership: "Moon", exaltation: "Jupiter", detriment: "Saturn", fall: "Mars" }, // Cancer
-  5: { rulership: "Sun", exaltation: "none", detriment: "Saturn", fall: "none" }, // Leo
-  6: { rulership: "Mercury", exaltation: "none", detriment: "Jupiter", fall: "Venus" }, // Virgo
-  7: { rulership: "Venus", exaltation: "Saturn", detriment: "Mars", fall: "Sun" }, // Libra
-  8: { rulership: "Mars", exaltation: "none", detriment: "Venus", fall: "Moon" }, // Scorpio
-  9: { rulership: "Jupiter", exaltation: "none", detriment: "Mercury", fall: "none" }, // Sagittarius
-  10: { rulership: "Saturn", exaltation: "Mars", detriment: "Moon", fall: "Jupiter" }, // Capricorn
-  11: { rulership: "Saturn", exaltation: "none", detriment: "Sun", fall: "none" }, // Aquarius
-  12: { rulership: "Jupiter", exaltation: "Venus", detriment: "Mercury", fall: "none" } // Pisces
+  1: {
+    rulership: "Mars",
+    exaltation: "Sun",
+    detriment: "Venus",
+    fall: "Saturn",
+  }, // Aries
+  2: {
+    rulership: "Venus",
+    exaltation: "Moon",
+    detriment: "Mars",
+    fall: "none",
+  }, // Taurus
+  3: {
+    rulership: "Mercury",
+    exaltation: "none",
+    detriment: "Jupiter",
+    fall: "none",
+  }, // Gemini
+  4: {
+    rulership: "Moon",
+    exaltation: "Jupiter",
+    detriment: "Saturn",
+    fall: "Mars",
+  }, // Cancer
+  5: {
+    rulership: "Sun",
+    exaltation: "none",
+    detriment: "Saturn",
+    fall: "none",
+  }, // Leo
+  6: {
+    rulership: "Mercury",
+    exaltation: "none",
+    detriment: "Jupiter",
+    fall: "Venus",
+  }, // Virgo
+  7: {
+    rulership: "Venus",
+    exaltation: "Saturn",
+    detriment: "Mars",
+    fall: "Sun",
+  }, // Libra
+  8: {
+    rulership: "Mars",
+    exaltation: "none",
+    detriment: "Venus",
+    fall: "Moon",
+  }, // Scorpio
+  9: {
+    rulership: "Jupiter",
+    exaltation: "none",
+    detriment: "Mercury",
+    fall: "none",
+  }, // Sagittarius
+  10: {
+    rulership: "Saturn",
+    exaltation: "Mars",
+    detriment: "Moon",
+    fall: "Jupiter",
+  }, // Capricorn
+  11: {
+    rulership: "Saturn",
+    exaltation: "none",
+    detriment: "Sun",
+    fall: "none",
+  }, // Aquarius
+  12: {
+    rulership: "Jupiter",
+    exaltation: "Venus",
+    detriment: "Mercury",
+    fall: "none",
+  }, // Pisces
 };
-
 
 export const ZODIAC_INFO: { [index: number]: ZodiacInfo } = {
   1: { element: "Fire", elementGlyph: "🜂", cardinality: "Cardinal" }, // Aries
@@ -100,12 +159,14 @@ export type House = {
 };
 
 export type BodyHousePosition = {
-  [K in Body]: {
-    currentHouse: number;
-    house: House;
-    decan: number;
-    position: Position;
-  };
+  currentHouse: number;
+  house: House;
+  decan: number;
+  position: Position;
+};
+
+export type BodyHousePositions = {
+  [K in Body]: BodyHousePosition;
 } & { cusps: number[] };
 
 export function getHouseData(
@@ -133,8 +194,7 @@ export function houseDegreesMinutesZodiac(
 ): any {
   const currentHouse = Math.floor(houseValue);
   const cusp = cusps[Math.floor(houseValue) % 12]; // 0 indexed array.
-  const house = HOUSES[cusp / 30] || {}; // 30 degrees per house.
-
+  const house = { ...(HOUSES[Math.floor(cusp / 30)] || {}) };
   const deg = Math.floor((houseValue % 1) * 30);
   const min = Math.floor((((houseValue % 1) * 30) % 1) * 60);
   (house as House).position = {
@@ -144,7 +204,7 @@ export function houseDegreesMinutesZodiac(
 
   return {
     currentHouse,
-    house: house,
+    house,
     decan: deg < 10 ? 1 : deg < 20 ? 2 : 3,
   };
 }
@@ -154,7 +214,7 @@ export function getBodiesHousePositions(
   location: [lon: number, lat: number],
   bodies: string[],
   houseSystem: string = "W"
-): BodyHousePosition {
+): BodyHousePositions {
   // Obtain house data for geo position
   let julianDate = toJulianDate(date);
   let houseData = getHouseData(date, location, houseSystem);

@@ -5,15 +5,9 @@ import {
   ZODIAC_INFO,
   getBodiesHousePositions,
 } from "../houses";
-import { BODY_GLYPHS, Body, PLANET_DIGNITIES, STANDARD_11 } from "../bodies";
+import { BODY_GLYPHS, Body, STANDARD_11 } from "../bodies";
 import ansis from "ansis";
-import { DECAN_RULER_LOOKUP } from "../decans";
-import {
-  ASPECT_GLYPHS,
-  COLORED_ASPECT_GLYPHS,
-  aspectsForBodies,
-  multiBodyAspectSearch,
-} from "../aspects";
+import { COLORED_ASPECT_GLYPHS, aspectsForBodies } from "../aspects";
 import { options } from "../abstractions/cmd";
 
 const currentSystemTimezone = options.time.toLocal().zoneName;
